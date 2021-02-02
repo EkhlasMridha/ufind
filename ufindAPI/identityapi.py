@@ -6,7 +6,8 @@ from rest_framework.response import Response
 from django.conf import settings
 from django.contrib import auth
 
-from user.serializers import UserRegistrationSerializer
+from user.serializers import UserRegistrationSerializer, UserProfileSerializer
+from user.models import User
 
 # Create your views here.
 
@@ -44,3 +45,13 @@ def login_api_view(request):
     data = {'token': auth_token}
 
     return Response(data=data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_profile_api(request):
+    email = request.user
+    user = User.objects.filter(email=email).first()
+    s_user = UserProfileSerializer(user).data
+
+    return Response(s_user, status=status.HTTP_200_OK)
