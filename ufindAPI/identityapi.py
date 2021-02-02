@@ -20,9 +20,11 @@ from user.passgenerator import generate_password
 def register_api_view(request):
     request.data['password'] = generate_password(8)
     serialized = UserRegistrationSerializer(data=request.data)
+
     mailBody = "Your account credentials: email: "+request.data['email']+" password: " + \
         request.data['password'] + \
         ". Please change your credential after loging in"
+
     responseData = {}
 
     if serialized.is_valid():
