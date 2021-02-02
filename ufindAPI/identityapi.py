@@ -8,14 +8,16 @@ from django.contrib import auth
 
 from user.serializers import UserRegistrationSerializer, UserProfileSerializer
 from user.models import User
+from ufindAPI.ufindpermissions import HasAdminPermission
 
 # Create your views here.
 
 
 @api_view(['POST'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated, HasAdminPermission])
 def register_api_view(request):
-    serialized = UserRegistrationSerializer(request.data)
+
+    serialized = UserRegistrationSerializer(data=request.data)
     responseData = {}
 
     if serialized.is_valid():
@@ -50,8 +52,7 @@ def login_api_view(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_profile_api(request):
-    email = request.user
-    user = User.objects.filter(email=email).first()
+    user = request.user
     s_user = UserProfileSerializer(user).data
 
     return Response(s_user, status=status.HTTP_200_OK)
