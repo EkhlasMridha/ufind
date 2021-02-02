@@ -71,6 +71,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ufind.wsgi.application'
 
+AUTH_USER_MODEL = 'user.User'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
@@ -119,6 +120,8 @@ USE_L10N = True
 
 USE_TZ = True
 
+# JWT CONF
+JWT_SECRET = "itisasecretkey29083782jkloasdpikajsdoiw1290kskdjakasld"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
