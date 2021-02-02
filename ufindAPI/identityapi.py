@@ -10,6 +10,7 @@ from django.core.mail import send_mail
 from user.serializers import UserRegistrationSerializer, UserProfileSerializer
 from user.models import User
 from ufindAPI.ufindpermissions import HasAdminPermission
+from user.passgenerator import generate_password
 
 # Create your views here.
 
@@ -17,9 +18,8 @@ from ufindAPI.ufindpermissions import HasAdminPermission
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, HasAdminPermission])
 def register_api_view(request):
-
+    request.data['password'] = generate_password(8)
     serialized = UserRegistrationSerializer(data=request.data)
-
     mailBody = "Your account credentials: email: "+request.data['email']+" password: " + \
         request.data['password'] + \
         ". Please change your credential after loging in"
@@ -29,6 +29,7 @@ def register_api_view(request):
         user = serialized.save()
         responseData['email'] = user.email
         responseData['name'] = user.name
+
         send_mail(
             "Welcome to U-Finder",
             mailBody,

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from user.models import User
+from user.passgenerator import generate_password
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
