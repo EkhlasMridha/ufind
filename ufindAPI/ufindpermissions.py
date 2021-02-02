@@ -3,7 +3,7 @@ from rest_framework import authentication
 
 
 class HasAdminPermission(permissions.BasePermission):
-    message = "Adding customers not allowed."
+    message = "Adding users not allowed."
 
     def has_permission(self, request, view):
         isSuperUser = request.user.is_superuser

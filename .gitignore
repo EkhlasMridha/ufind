@@ -1,3 +1,4 @@
+.env
 prodenv
 migrations
 __pycache__
