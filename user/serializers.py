@@ -1,8 +1,9 @@
 from rest_framework import serializers
 from user.models import User
+from user.passgenerator import generate_password
 
 
-class UserProfile(serializers.ModelSerializer):
+class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'email', 'name']
