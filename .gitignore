@@ -1,4 +1,6 @@
 .env
 prodenv
 migrations
+media
+media/*
 __pycache__
