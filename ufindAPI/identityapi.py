@@ -59,7 +59,7 @@ def login_api_view(request):
     auth_token = jwt.encode(
         {'email': user.email, 'isAdmin': user.is_superuser}, settings.JWT_SECRET)
 
-    data = {'token': auth_token}
+    data = {'token': auth_token, 'isAdmin': user.is_superuser}
 
     return Response(data=data, status=status.HTTP_200_OK)
 
