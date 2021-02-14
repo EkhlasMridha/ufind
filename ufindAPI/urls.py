@@ -5,8 +5,13 @@ from ufindAPI.identityapi import (
     get_profile_api
 )
 
+from ufindAPI.missingpersonapi import (
+    submit_case_view
+)
+
 urlpatterns = [
     path('login', login_api_view, name="login"),
     path('register', register_api_view, name='register'),
-    path('profile', get_profile_api, name="profile")
+    path('profile', get_profile_api, name="profile"),
+    path('case', submit_case_view, name="case")
 ]

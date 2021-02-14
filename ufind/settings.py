@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'user',
     'ufindAPI',
     'jwtmanager',
+    'missing',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
