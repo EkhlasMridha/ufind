@@ -57,7 +57,7 @@ def login_api_view(request):
         return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
     auth_token = jwt.encode(
-        {'email': user.email, 'isAdmin': user.is_superuser}, settings.JWT_SECRET)
+        {'id': user.id, 'email': user.email, 'isAdmin': user.is_superuser}, settings.JWT_SECRET)
 
     data = {'token': auth_token, 'isAdmin': user.is_superuser}
 
