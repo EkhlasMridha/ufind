@@ -16,6 +16,9 @@ from train import traindata
 @parser_classes([MultiPartParser, FormParser])
 @permission_classes([IsAuthenticated])
 def submit_case_view(request):
+    user = request.user
+    print(request.data)
+    request.data['policeid'] = user.id
     serializers = MissingPersonSerializer(data=request.data)
     if serializers.is_valid():
         serializers.save()
@@ -26,7 +29,8 @@ def submit_case_view(request):
 
 @api_view(['GET'])
 def get_cases_view(request):
-    result = MissingPerson.objects.all()
+    id = request.user.id
+    result = MissingPerson.objects.filter(isSolved=False, policeid=id)
     serialized_result = MissingPersonSerializer(result, many=True)
 
     return Response(serialized_result.data, status=status.HTTP_200_OK)
@@ -37,10 +41,8 @@ def case_data_found(request):
     serialized_found = FoundPersonSerializer(data=request.data)
 
     if serialized_found.is_valid():
-        # print(serialized_found.data)
         serialized_found.save()
         traindata.refreshModel(serialized_found.data)
         return Response(serialized_found.data, status=status.HTTP_201_CREATED)
     else:
         return Response(serialized_found.errors, status.HTTP_400_BAD_REQUEST)
-    # return Response("Test", status=status.HTTP_200_OK)

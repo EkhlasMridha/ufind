@@ -6,4 +6,4 @@ class MissingPersonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MissingPerson
-        fields = ('id', 'name', 'description', 'location', 'image')
+        fields = ('id', 'name', 'description', 'location', 'image', 'policeid')
