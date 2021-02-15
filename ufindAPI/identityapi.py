@@ -71,3 +71,12 @@ def get_profile_api(request):
     s_user = UserProfileSerializer(user).data
 
     return Response(s_user, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, HasAdminPermission])
+def get_userlist_view(request):
+    userlist = User.objects.all()
+    serialized = UserProfileSerializer(userlist, many=True)
+
+    return Response(serialized.data, status=status.HTTP_200_OK)

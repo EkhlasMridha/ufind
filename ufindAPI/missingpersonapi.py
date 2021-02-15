@@ -10,6 +10,7 @@ from missing.models import MissingPerson
 from train.models import FoundPerson
 from train.serializers import FoundPersonSerializer
 from train import traindata
+from ufindAPI.ufindpermissions import HasAdminPermission
 
 
 @api_view(['POST'])
@@ -46,3 +47,11 @@ def case_data_found(request):
         return Response(serialized_found.data, status=status.HTTP_201_CREATED)
     else:
         return Response(serialized_found.errors, status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, HasAdminPermission])
+def get_all_cases(request):
+    result = MissingPerson.objects.all()
+    serialized_result = MissingPersonSerializer(result, many=True)
+    return Response(serialized_result.data, status=status.HTTP_200_OK)
