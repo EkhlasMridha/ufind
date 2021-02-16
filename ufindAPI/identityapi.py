@@ -76,7 +76,8 @@ def get_profile_api(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, HasAdminPermission])
 def get_userlist_view(request):
-    userlist = User.objects.all()
+    mail = request.user.email
+    userlist = User.objects.exclude(email=mail)
     serialized = UserProfileSerializer(userlist, many=True)
 
     return Response(serialized.data, status=status.HTTP_200_OK)
