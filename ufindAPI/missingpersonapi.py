@@ -9,7 +9,7 @@ from missing.serializers import MissingPersonSerializer
 from missing.models import MissingPerson
 from train.models import FoundPerson
 from train.serializers import FoundPersonSerializer
-from train import traindata
+from train import traindata, recognize
 from ufindAPI.ufindpermissions import HasAdminPermission
 
 
@@ -54,4 +54,15 @@ def case_data_found(request):
 def get_all_cases(request):
     result = MissingPerson.objects.all()
     serialized_result = MissingPersonSerializer(result, many=True)
+    return Response(serialized_result.data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def match_person_view(request):
+    personData = request.data
+    personId = recognize.match_face(personData)
+    result = FoundPerson.objects.get(id=personId)
+    serialized_result = FoundPersonSerializer(result)
+
     return Response(serialized_result.data, status=status.HTTP_200_OK)

@@ -11,6 +11,7 @@ from ufindAPI.missingpersonapi import (
     get_cases_view,
     case_data_found,
     get_all_cases,
+    match_person_view
 )
 
 urlpatterns = [
@@ -21,5 +22,6 @@ urlpatterns = [
     path('get-cases', get_cases_view, name='get-cases'),
     path('found', case_data_found, name="found"),
     path('allcase', get_all_cases, name="allcase"),
-    path('alluser', get_userlist_view, name='alluser')
+    path('alluser', get_userlist_view, name='alluser'),
+    path('match', match_person_view, name="match")
 ]
