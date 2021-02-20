@@ -11,7 +11,7 @@ frontalPath = os.path.join(
 
 
 def refreshModel(data):
-    print(data)
+    # print(data)
     classifier = cv2.CascadeClassifier(frontalPath)
 
     imgPath = data['image']
