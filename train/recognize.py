@@ -44,4 +44,4 @@ def match_face(imagePayload):
         X_test.append(im_face.reshape(-1))
 
     response = model.predict(np.array(X_test))
-    return response[0]
+    return response

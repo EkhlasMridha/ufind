@@ -62,7 +62,8 @@ def get_all_cases(request):
 def match_person_view(request):
     personData = request.data
     personId = recognize.match_face(personData)
-    result = FoundPerson.objects.get(id=personId)
-    serialized_result = FoundPersonSerializer(result)
+
+    result = FoundPerson.objects.filter(id=personId)
+    serialized_result = FoundPersonSerializer(result, many=True)
 
     return Response(serialized_result.data, status=status.HTTP_200_OK)

@@ -57,7 +57,7 @@ def reset_request_view(request):
     if userCount == 0:
         return Response({'message': 'No user with this email'}, status=status.HTTP_200_OK)
     user = User.objects.get(email=useremail)
-    reset_token = jwt.encode({'mail': useremail}, settings.PASS_SECRET)
+    reset_token = jwt.encode({'mail': useremail}, user.password)
     mailBody = "Click on the link to reset your password: http://localhost:4200/reset?token=" + reset_token
     send_mail(
         "Reset request",
@@ -77,14 +77,10 @@ def password_reset_view(request):
     user = User.objects.get(email=reset_payload.email)
     decoded = jwt.decode(reset_payload.token,
                          user.password, algorithms='HS256')
-    user['password'] = reset_payload.password
-    serialized = UserProfileSerializer(user)
+    user.set_password(reset_payload.password)
+    user.save()
 
-    if serialized.is_valid():
-        serialized.save()
-        return Response(serialized.data, status=status.HTTP_200_OK)
-
-    return Response(serialized.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response({'message': 'password changed successfully'}, status=status.HTTP_200_OK)
 
 
 @api_view(["POST"])
