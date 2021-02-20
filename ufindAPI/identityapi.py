@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib import auth
 from django.core.mail import send_mail
 
-from user.serializers import UserRegistrationSerializer, UserProfileSerializer
+from user.serializers import UserRegistrationSerializer, UserProfileSerializer, ChangePasswordSerializer
 from user.models import User
 from ufindAPI.ufindpermissions import HasAdminPermission
 from user.passgenerator import generate_password
@@ -43,6 +43,48 @@ def register_api_view(request):
         responseData['message'] = serialized.errors
 
     return Response(data=responseData)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def reset_request_view(request):
+    useremail = request.data['email']
+
+    if useremail is None:
+        return Response({'message': 'Email parameter is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    userCount = User.objects.filter(email=useremail).count()
+    if userCount == 0:
+        return Response({'message': 'No user with this email'}, status=status.HTTP_200_OK)
+    user = User.objects.get(email=useremail)
+    reset_token = jwt.encode({'mail': useremail}, settings.PASS_SECRET)
+    mailBody = "Click on the link to reset your password: http://localhost:4200/reset?token=" + reset_token
+    send_mail(
+        "Reset request",
+        mailBody,
+        "vootwap@gmail.com",
+        [useremail],
+        fail_silently=False
+    )
+
+    return Response({'message': "Mail sent with reset request"}, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def password_reset_view(request):
+    reset_payload = request.data
+    user = User.objects.get(email=reset_payload.email)
+    decoded = jwt.decode(reset_payload.token,
+                         user.password, algorithms='HS256')
+    user['password'] = reset_payload.password
+    serialized = UserProfileSerializer(user)
+
+    if serialized.is_valid():
+        serialized.save()
+        return Response(serialized.data, status=status.HTTP_200_OK)
+
+    return Response(serialized.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["POST"])
@@ -81,3 +123,20 @@ def get_userlist_view(request):
     serialized = UserProfileSerializer(userlist, many=True)
 
     return Response(serialized.data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def change_password(request):
+    email = request.user.email
+    password = request.data.get('oldpass')
+
+    authUser = auth.authenticate(email=email, password=password)
+
+    if (authUser is None):
+        return Response({'message': 'Invalid credential'}, status=status.HTTP_400_BAD_REQUEST)
+
+    authUser.set_password(request.data.get('newpass'))
+    authUser.save()
+
+    return Response({"meesage": 'password changed successfully'}, status=status.HTTP_200_OK)

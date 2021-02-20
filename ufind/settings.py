@@ -136,6 +136,7 @@ USE_TZ = True
 
 # JWT CONF
 JWT_SECRET = "itisasecretkey29083782jkloasdpikajsdoiw1290kskdjakasld"
+PASS_SECRET = "itisasecretkey29083782jkloasdpikawpoefniwo82386lkfnow"
 
 # Email conf
 EMAIL_HOST = 'smtp.gmail.com'

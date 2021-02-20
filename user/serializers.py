@@ -27,3 +27,21 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
+
+
+class ChangePasswordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'name', 'email', 'password']
+
+    def save(self):
+        user = User(
+            id=self.validated_data['id'],
+            email=self.validated_data['email'],
+            name=self.validated_data['name']
+        )
+        password = self.validated_data['password']
+        user.set_password(password)
+        user.save()
+
+        return user

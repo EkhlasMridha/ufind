@@ -3,7 +3,9 @@ from ufindAPI.identityapi import (
     login_api_view,
     register_api_view,
     get_profile_api,
-    get_userlist_view
+    get_userlist_view,
+    reset_request_view,
+    change_password
 )
 
 from ufindAPI.missingpersonapi import (
@@ -23,5 +25,7 @@ urlpatterns = [
     path('found', case_data_found, name="found"),
     path('allcase', get_all_cases, name="allcase"),
     path('alluser', get_userlist_view, name='alluser'),
-    path('match', match_person_view, name="match")
+    path('match', match_person_view, name="match"),
+    path('reset-password', reset_request_view, name='reset-password'),
+    path('change-password', change_password, name='change-password')
 ]
