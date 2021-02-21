@@ -63,7 +63,28 @@ def match_person_view(request):
     personData = request.data
     personId = recognize.match_face(personData)
 
-    result = FoundPerson.objects.filter(id=personId)
+    result = FoundPerson.objects.filter(pk__in=personId)
     serialized_result = FoundPersonSerializer(result, many=True)
 
     return Response(serialized_result.data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def delete_case_view(request):
+    case = request.data
+    person = MissingPerson.objects.filter(id=case['id']).delete()
+
+    return Response({'message': 'Delted'}, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def mark_as_solved(request):
+    case = request.data
+    case['isSolved'] = True
+    serialized = MissingPersonSerializer(data=case)
+    if serialized.is_valid():
+        serialized.save()
+        return Response(serialized.data, status=status.HTTP_200_OK)
+    return Response(serialized.errors, status=status.HTTP_400_BAD_REQUEST)

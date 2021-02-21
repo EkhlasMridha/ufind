@@ -36,7 +36,7 @@ def refreshModel(data):
 
             f_list.append(gray_face.reshape(-1))
 
-        if len(f_list) == 10:
+        if len(f_list) == 6:
             break
 
     dumpdata.write(data['id'], np.array(f_list))

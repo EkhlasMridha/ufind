@@ -4,11 +4,20 @@ import pandas as pd
 from sklearn.neighbors import KNeighborsClassifier
 import os
 from django.conf import settings
+import csv
 
 from train.dumpdata import f_name
 
 frontalPath = os.path.join(
     settings.BASE_DIR, 'train', 'haarcascade_frontalface_default.xml')
+
+
+class Face:
+    def __init__(self, **kwargs):
+        self.id = kwargs.get('id')
+
+    def __str__(self):
+        return self.id
 
 
 def match_face(imagePayload):
@@ -21,13 +30,13 @@ def match_face(imagePayload):
     # Knn function calling with k = 5
     model = KNeighborsClassifier(n_neighbors=5)
 
-    # fdtraining of model
     model.fit(X, Y)
+
     imgPath = imagePayload['image']
     dpath = imgPath.split('/')
     f_path = os.path.join(settings.MEDIA_ROOT,
                           dpath[len(dpath) - 2], dpath[len(dpath) - 1])
-    print(f_path)
+
     gray = cv2.imread(f_path, cv2.IMREAD_GRAYSCALE)
     classifier = cv2.CascadeClassifier(frontalPath)
 
@@ -44,4 +53,9 @@ def match_face(imagePayload):
         X_test.append(im_face.reshape(-1))
 
     response = model.predict(np.array(X_test))
+    distance, indices = model.kneighbors(
+        np.array(X_test))
+    lb = model.score(X, Y)
+
+    response2 = response.tolist()
     return response

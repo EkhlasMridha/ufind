@@ -7,4 +7,4 @@ class FoundPersonSerializer(serializers.ModelSerializer):
     class Meta:
 
         model = FoundPerson
-        fields = ('id', 'description', 'phone', 'image')
+        fields = ('id', 'description', 'phone', 'image', 'location')

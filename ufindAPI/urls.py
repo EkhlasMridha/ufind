@@ -13,7 +13,9 @@ from ufindAPI.missingpersonapi import (
     get_cases_view,
     case_data_found,
     get_all_cases,
-    match_person_view
+    match_person_view,
+    delete_case_view,
+    mark_as_solved
 )
 
 urlpatterns = [
@@ -27,5 +29,7 @@ urlpatterns = [
     path('alluser', get_userlist_view, name='alluser'),
     path('match', match_person_view, name="match"),
     path('reset-password', reset_request_view, name='reset-password'),
-    path('change-password', change_password, name='change-password')
+    path('change-password', change_password, name='change-password'),
+    path('delete-case', delete_case_view, name='delete-case'),
+    path('make-solved', mark_as_solved, name='make-solved')
 ]
