@@ -29,12 +29,23 @@ def submit_case_view(request):
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_cases_view(request):
     id = request.user.id
     result = MissingPerson.objects.filter(isSolved=False, policeid=id)
     serialized_result = MissingPersonSerializer(result, many=True)
 
     return Response(serialized_result.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_solved_cases(request):
+    id = request.user.id
+    result = MissingPerson.objects.filter(isSolved=True, policeid=id)
+    serialized = MissingPersonSerializer(result, many=True)
+
+    return Response(serialized.data, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
@@ -81,10 +92,14 @@ def delete_case_view(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def mark_as_solved(request):
-    case = request.data
-    case['isSolved'] = True
-    serialized = MissingPersonSerializer(data=case)
-    if serialized.is_valid():
-        serialized.save()
-        return Response(serialized.data, status=status.HTTP_200_OK)
-    return Response(serialized.errors, status=status.HTTP_400_BAD_REQUEST)
+    print(request.data['id'])
+    case = MissingPerson.objects.get(id=request.data['id'])
+    case.isSolved = True
+    case.save()
+    # serialized = MissingPersonSerializer(data=case)
+    # if serialized.is_valid():
+    #     print(serialized.data)
+    #     serialized.save()
+    #     return Response(serialized.data, status=status.HTTP_200_OK)
+    # print(serialized.data)
+    return Response({'message': 'Solved'}, status=status.HTTP_200_OK)
