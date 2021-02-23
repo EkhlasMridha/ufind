@@ -12,14 +12,6 @@ frontalPath = os.path.join(
     settings.BASE_DIR, 'train', 'haarcascade_frontalface_default.xml')
 
 
-class Face:
-    def __init__(self, **kwargs):
-        self.id = kwargs.get('id')
-
-    def __str__(self):
-        return self.id
-
-
 def match_face(imagePayload):
     # reading the data
     data = pd.read_csv(f_name).values
@@ -28,7 +20,8 @@ def match_face(imagePayload):
     X, Y = data[:, 1:-1], data[:, -1]
 
     # Knn function calling with k = 5
-    model = KNeighborsClassifier(n_neighbors=5)
+    model = KNeighborsClassifier(
+        n_neighbors=5, weights="distance")
 
     model.fit(X, Y)
 
@@ -53,9 +46,6 @@ def match_face(imagePayload):
         X_test.append(im_face.reshape(-1))
 
     response = model.predict(np.array(X_test))
-    distance, indices = model.kneighbors(
-        np.array(X_test))
-    lb = model.score(X, Y)
 
     response2 = response.tolist()
     return response

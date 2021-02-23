@@ -16,7 +16,8 @@ from ufindAPI.missingpersonapi import (
     match_person_view,
     delete_case_view,
     mark_as_solved,
-    get_solved_cases
+    get_solved_cases,
+    training_set_upload
 )
 
 urlpatterns = [
@@ -33,5 +34,6 @@ urlpatterns = [
     path('change-password', change_password, name='change-password'),
     path('delete-case', delete_case_view, name='delete-case'),
     path('mark-solved', mark_as_solved, name='make-solved'),
-    path('solved-case', get_solved_cases, name='solved-cases')
+    path('solved-case', get_solved_cases, name='solved-cases'),
+    path('train-data', training_set_upload, name='train-data')
 ]

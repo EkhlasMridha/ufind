@@ -7,8 +7,8 @@ from django.conf import settings
 
 from missing.serializers import MissingPersonSerializer
 from missing.models import MissingPerson
-from train.models import FoundPerson
-from train.serializers import FoundPersonSerializer
+from train.models import FoundPerson, TrainingPerson
+from train.serializers import FoundPersonSerializer, TrainingPersonSerializer, TrainingImageSerializer
 from train import traindata, recognize
 from ufindAPI.ufindpermissions import HasAdminPermission
 
@@ -20,7 +20,7 @@ def submit_case_view(request):
     user = request.user
     print(request.data)
     request.data['policeid'] = user.id
-    serializers = MissingPersonSerializer(data=request.data)
+    serializers = TrainingPersonSerializer(data=request.data)
     if serializers.is_valid():
         serializers.save()
         return Response("Created", status=status.HTTP_200_OK)
@@ -32,7 +32,7 @@ def submit_case_view(request):
 @permission_classes([IsAuthenticated])
 def get_cases_view(request):
     id = request.user.id
-    result = MissingPerson.objects.filter(isSolved=False, policeid=id)
+    result = TrainingPerson.objects.filter(isSolved=False, policeid=id)
     serialized_result = MissingPersonSerializer(result, many=True)
 
     return Response(serialized_result.data, status=status.HTTP_200_OK)
@@ -69,13 +69,13 @@ def get_all_cases(request):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 def match_person_view(request):
     personData = request.data
     personId = recognize.match_face(personData)
 
-    result = FoundPerson.objects.filter(pk__in=personId)
-    serialized_result = FoundPersonSerializer(result, many=True)
+    result = TrainingPerson.objects.filter(pk__in=personId)
+    serialized_result = TrainingPersonSerializer(result, many=True)
 
     return Response(serialized_result.data, status=status.HTTP_200_OK)
 
@@ -103,3 +103,24 @@ def mark_as_solved(request):
     #     return Response(serialized.data, status=status.HTTP_200_OK)
     # print(serialized.data)
     return Response({'message': 'Solved'}, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def training_set_upload(request):
+    personid = request.data['personId']
+    imageData = request.data
+    imageData['personId'] = personid
+
+    serialized_sample = TrainingImageSerializer(data=imageData)
+    missing = TrainingPerson.objects.get(id=imageData['personId'])
+    if missing.uploads > 5:
+        return Response({'message': 'Max upload limit 4'}, status=status.HTTP_200_OK)
+
+    if serialized_sample.is_valid():
+        serialized_sample.save()
+        traindata.refreshModel(serialized_sample.data)
+        missing.uploads += 1
+        missing.save()
+        return Response({'message': 'Sample uploaded'}, status=status.HTTP_200_OK)
+    return Response(serialized_sample.errors, status=status.HTTP_400_BAD_REQUEST)
