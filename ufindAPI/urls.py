@@ -17,7 +17,12 @@ from ufindAPI.missingpersonapi import (
     delete_case_view,
     mark_as_solved,
     get_solved_cases,
-    training_set_upload
+    training_set_upload,
+    generate_report_view,
+    send_report_view,
+    get_report_view,
+    solve_case_view,
+    delete_report_view
 )
 
 urlpatterns = [
@@ -35,5 +40,10 @@ urlpatterns = [
     path('delete-case', delete_case_view, name='delete-case'),
     path('mark-solved', mark_as_solved, name='make-solved'),
     path('solved-case', get_solved_cases, name='solved-cases'),
-    path('train-data', training_set_upload, name='train-data')
+    path('train-data', training_set_upload, name='train-data'),
+    path('generate-report', generate_report_view, name='generate-report'),
+    path('send-report', send_report_view, name='send-report'),
+    path('get-report', get_report_view, name='get-report'),
+    path('solve', solve_case_view, name='solve'),
+    path('delete-report', delete_report_view, name='delete-report')
 ]

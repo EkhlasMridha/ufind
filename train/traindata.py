@@ -21,7 +21,7 @@ def refreshModel(data):
     img = cv2.imread(f_path, cv2.IMREAD_GRAYSCALE)
 
     while True:
-        faces = classifier.detectMultiScale(img, 1.7, 4)
+        faces = classifier.detectMultiScale(img, 1.6, 4)
         faces = sorted(faces, key=lambda x: x[2] * x[3], reverse=True)
         faces = faces[:1]
 

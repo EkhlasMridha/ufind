@@ -7,8 +7,8 @@ from django.conf import settings
 
 from missing.serializers import MissingPersonSerializer
 from missing.models import MissingPerson
-from train.models import FoundPerson, TrainingPerson
-from train.serializers import FoundPersonSerializer, TrainingPersonSerializer, TrainingImageSerializer, ReportModelSerializer
+from train.models import FoundPerson, TrainingPerson, PoliceReport, FoundReport
+from train.serializers import FoundPersonSerializer, TrainingPersonSerializer, TrainingImageSerializer, FoundReportSerializer, PoliceReportSerializer
 from train import traindata, recognize
 from ufindAPI.ufindpermissions import HasAdminPermission
 
@@ -42,8 +42,8 @@ def get_cases_view(request):
 @permission_classes([IsAuthenticated])
 def get_solved_cases(request):
     id = request.user.id
-    result = MissingPerson.objects.filter(isSolved=True, policeid=id)
-    serialized = MissingPersonSerializer(result, many=True)
+    result = TrainingPerson.objects.filter(isSolved=True, policeid=id)
+    serialized = TrainingPersonSerializer(result, many=True)
 
     return Response(serialized.data, status=status.HTTP_200_OK)
 
@@ -129,16 +129,61 @@ def training_set_upload(request):
 @api_view(['POST'])
 def generate_report_view(request):
     payload = request.data
-    serialized_payload = ReportModelSerializer(data=payload)
+    payload['policeid']
+    serialized_payload = FoundReportSerializer(data=payload)
 
     if serialized_payload.is_valid():
         serialized_payload.save()
         found = recognize.match_face(serialized_payload.data)
 
-        result = TrainingPerson.objects.filter(pk__in=personId)
+        result = TrainingPerson.objects.filter(pk__in=found)
+        # print(result)
         serialized_result = TrainingPersonSerializer(result, many=True)
-        serialized_payload.policeid = serialized_result[0].id
-        serialized_payload.save()
 
-        return Response(serialized_result.data, status=status.HTTP_200_OK)
-    return Response(serialized_result.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'match': serialized_result.data, 'reportid': serialized_payload.data['id']}, status=status.HTTP_200_OK)
+    return Response(serialized_payload.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def send_report_view(request):
+    data = request.data
+    serialized = PoliceReportSerializer(data=data)
+
+    if serialized.is_valid():
+        serialized.save()
+        return Response(serialized.data, status=status.HTTP_200_OK)
+    return Response(serialized.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_report_view(request):
+    user = request.user
+
+    report = PoliceReport.objects.filter(policeid=user.id)
+
+    foundReport = FoundReport.objects.filter(pk__in=report)
+    # print(foundReport)
+    serializedReport = FoundReportSerializer(foundReport, many=True)
+
+    return Response(serializedReport.data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def solve_case_view(request):
+    data = request.data
+    result = TrainingPerson.objects.filter(id=data['id']).update(isSolved=True)
+
+    serialized = TrainingPersonSerializer(result)
+    return Response(serialized.data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def delete_report_view(request):
+    data = request.data
+
+    FoundReport.objects.filter(id=data['id']).delete()
+
+    return Response({'message': 'Deleted'}, status=status.HTTP_200_OK)

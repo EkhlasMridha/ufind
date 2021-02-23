@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from train.models import FoundPerson, TrainingPerson, TrainingImage, ReportModel
+from train.models import FoundPerson, TrainingPerson, TrainingImage, FoundReport, PoliceReport
 
 
 class FoundPersonSerializer(serializers.ModelSerializer):
@@ -14,7 +14,7 @@ class TrainingPersonSerializer(serializers.ModelSerializer):
     class Meta:
         model = TrainingPerson
         fields = ('id', 'name', 'description', 'phone',
-                  'location', 'policeid', 'image')
+                  'location', 'policeid', 'image', 'isSolved')
 
 
 class TrainingImageSerializer(serializers.ModelSerializer):
@@ -23,8 +23,14 @@ class TrainingImageSerializer(serializers.ModelSerializer):
         fields = ('personId', 'image')
 
 
-class ReportModelSerializer(serializers.ModelSerializer):
+class FoundReportSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ReportModel
-        fields = ('personid', 'policeid', 'phone',
+        model = FoundReport
+        fields = ('id', 'phone',
                   'image', 'location', 'description')
+
+
+class PoliceReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PoliceReport
+        fields = ('policeid', 'reportid')

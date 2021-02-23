@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 import pandas as pd
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
 import os
 from django.conf import settings
 import csv
@@ -18,15 +20,15 @@ def match_face(imagePayload):
 
     # data partition
     X, Y = data[:, 1:-1], data[:, -1]
+    X_train, X_test2, Y_train, Y_test = train_test_split(X, Y, train_size=0.80)
     A = data[:, 6]
     print(A)
-    print(X)
-    print(Y)
+    print(X_train)
+    print(Y_train)
     # Knn function calling with k = 5
-    model = KNeighborsClassifier(
-        n_neighbors=5, weights="distance")
+    model = KNeighborsClassifier(n_neighbors=8)
 
-    model.fit(X, Y)
+    model.fit(X_train, Y_train)
 
     imgPath = imagePayload['image']
     dpath = imgPath.split('/')
@@ -50,9 +52,9 @@ def match_face(imagePayload):
         X_test.append(im_face.reshape(-1))
         print(X_test)
 
-    sc = model.score(X, Y)
-    print(sc)
     response = model.predict(np.array(X_test))
+    # sc = accuracy_score(Y_test, response)
+    # print(sc)
     print(response)
     response2 = response.tolist()
     return response
