@@ -20,18 +20,21 @@ def refreshModel(data):
 
     img = cv2.imread(f_path, cv2.IMREAD_GRAYSCALE)
 
-    faces = classifier.detectMultiScale(img, 1.5, 5)
-    faces = sorted(faces, key=lambda x: x[2] * x[3], reverse=True)
-    faces = faces[:1]
+    while True:
+        faces = classifier.detectMultiScale(img, 1.5, 5)
+        faces = sorted(faces, key=lambda x: x[2] * x[3], reverse=True)
+        faces = faces[:1]
 
-    if len(faces) == 1:
-        face = faces[0]
-        x, y, w, h = face
+        if len(faces) == 1:
+            face = faces[0]
+            x, y, w, h = face
 
-        filtered_face = img[y:y + h, x:x + w]
-        gray_face = cv2.resize(filtered_face, (100, 100))
-        # print(len(f_list), type(gray_face), gray_face.shape)
+            filtered_face = img[y:y + h, x:x + w]
+            gray_face = cv2.resize(filtered_face, (100, 100))
+            # print(len(f_list), type(gray_face), gray_face.shape)
 
-        f_list.append(gray_face.reshape(-1))
+            f_list.append(gray_face.reshape(-1))
+        if len(f_list) >= 8:
+            break
 
     dumpdata.write(data['personId'], np.array(f_list))
