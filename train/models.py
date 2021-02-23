@@ -33,3 +33,15 @@ class TrainingImage(models.Model):
 
     def __str__(self):
         return "{}".format(self.personId)
+
+
+class ReportModel(models.Model):
+    policeid = models.ForeignKey(User, on_delete=models.CASCADE, default=2)
+    personid = models.ForeignKey(TrainingPerson, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to="founded/")
+    phone = models.CharField(max_length=30)
+    location = models.CharField(max_length=150)
+    description = models.CharField(max_length=200)
+
+    def __str__(self):
+        return "{}".format(self.phone)

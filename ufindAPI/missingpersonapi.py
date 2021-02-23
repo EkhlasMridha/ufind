@@ -8,7 +8,7 @@ from django.conf import settings
 from missing.serializers import MissingPersonSerializer
 from missing.models import MissingPerson
 from train.models import FoundPerson, TrainingPerson
-from train.serializers import FoundPersonSerializer, TrainingPersonSerializer, TrainingImageSerializer
+from train.serializers import FoundPersonSerializer, TrainingPersonSerializer, TrainingImageSerializer, ReportModelSerializer
 from train import traindata, recognize
 from ufindAPI.ufindpermissions import HasAdminPermission
 
@@ -115,7 +115,7 @@ def training_set_upload(request):
     serialized_sample = TrainingImageSerializer(data=imageData)
     missing = TrainingPerson.objects.get(id=imageData['personId'])
     if missing.uploads > 5:
-        return Response({'message': 'Max upload limit 4'}, status=status.HTTP_200_OK)
+        return Response({'message': 'Max upload limit 4', 'uploads': missing.uploads}, status=status.HTTP_403_FORBIDDEN)
 
     if serialized_sample.is_valid():
         serialized_sample.save()
@@ -124,3 +124,21 @@ def training_set_upload(request):
         missing.save()
         return Response({'message': 'Sample uploaded'}, status=status.HTTP_200_OK)
     return Response(serialized_sample.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def generate_report_view(request):
+    payload = request.data
+    serialized_payload = ReportModelSerializer(data=payload)
+
+    if serialized_payload.is_valid():
+        serialized_payload.save()
+        found = recognize.match_face(serialized_payload.data)
+
+        result = TrainingPerson.objects.filter(pk__in=personId)
+        serialized_result = TrainingPersonSerializer(result, many=True)
+        serialized_payload.policeid = serialized_result[0].id
+        serialized_payload.save()
+
+        return Response(serialized_result.data, status=status.HTTP_200_OK)
+    return Response(serialized_result.errors, status=status.HTTP_400_BAD_REQUEST)

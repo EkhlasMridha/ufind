@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from train.models import FoundPerson, TrainingPerson, TrainingImage
+from train.models import FoundPerson, TrainingPerson, TrainingImage, ReportModel
 
 
 class FoundPersonSerializer(serializers.ModelSerializer):
@@ -21,3 +21,10 @@ class TrainingImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = TrainingImage
         fields = ('personId', 'image')
+
+
+class ReportModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ReportModel
+        fields = ('personid', 'policeid', 'phone',
+                  'image', 'location', 'description')
