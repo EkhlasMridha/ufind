@@ -9,7 +9,7 @@ import csv
 from train.dumpdata import f_name
 
 frontalPath = os.path.join(
-    settings.BASE_DIR, 'train', 'haarcascade_frontalface_default.xml')
+    settings.BASE_DIR, 'train', 'haarcascade_frontalface_alt.xml')
 
 
 def match_face(imagePayload):

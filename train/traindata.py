@@ -6,7 +6,7 @@ import os
 from django.conf import settings
 
 frontalPath = os.path.join(
-    settings.BASE_DIR, 'train', 'haarcascade_frontalface_default.xml')
+    settings.BASE_DIR, 'train', 'haarcascade_frontalface_alt.xml')
 
 
 def refreshModel(data):
