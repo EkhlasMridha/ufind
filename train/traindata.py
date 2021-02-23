@@ -5,7 +5,6 @@ import os
 
 from django.conf import settings
 
-f_list = []
 frontalPath = os.path.join(
     settings.BASE_DIR, 'train', 'haarcascade_frontalface_default.xml')
 
@@ -13,7 +12,7 @@ frontalPath = os.path.join(
 def refreshModel(data):
     # print(data)
     classifier = cv2.CascadeClassifier(frontalPath)
-
+    f_list = []
     imgPath = data['image']
     dpath = imgPath.split('/')
     f_path = os.path.join(settings.MEDIA_ROOT,
