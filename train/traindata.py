@@ -21,7 +21,7 @@ def refreshModel(data):
     img = cv2.imread(f_path, cv2.IMREAD_GRAYSCALE)
 
     while True:
-        faces = classifier.detectMultiScale(img, 1.5, 5)
+        faces = classifier.detectMultiScale(img, 1.7, 4)
         faces = sorted(faces, key=lambda x: x[2] * x[3], reverse=True)
         faces = faces[:1]
 
@@ -34,6 +34,7 @@ def refreshModel(data):
             # print(len(f_list), type(gray_face), gray_face.shape)
 
             f_list.append(gray_face.reshape(-1))
+        print(len(f_list))
         if len(f_list) >= 8:
             break
 

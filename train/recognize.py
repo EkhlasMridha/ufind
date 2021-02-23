@@ -18,7 +18,10 @@ def match_face(imagePayload):
 
     # data partition
     X, Y = data[:, 1:-1], data[:, -1]
-
+    A = data[:, 6]
+    print(A)
+    print(X)
+    print(Y)
     # Knn function calling with k = 5
     model = KNeighborsClassifier(
         n_neighbors=5, weights="distance")
@@ -37,15 +40,19 @@ def match_face(imagePayload):
 
     faces = classifier.detectMultiScale(gray, 1.5, 5)
     X_test = []
-
+    # if len(faces) == 0:
+    #     return 'null'
     # Testing data
     for face in faces:
         x, y, w, h = face
         im_face = gray[y:y + h, x:x + w]
         im_face = cv2.resize(im_face, (100, 100))
         X_test.append(im_face.reshape(-1))
+        print(X_test)
 
+    sc = model.score(X, Y)
+    print(sc)
     response = model.predict(np.array(X_test))
-
+    print(response)
     response2 = response.tolist()
     return response

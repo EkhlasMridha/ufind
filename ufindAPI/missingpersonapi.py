@@ -33,7 +33,7 @@ def submit_case_view(request):
 def get_cases_view(request):
     id = request.user.id
     result = TrainingPerson.objects.filter(isSolved=False, policeid=id)
-    serialized_result = MissingPersonSerializer(result, many=True)
+    serialized_result = TrainingPersonSerializer(result, many=True)
 
     return Response(serialized_result.data, status=status.HTTP_200_OK)
 
